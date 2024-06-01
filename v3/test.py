@@ -29,11 +29,6 @@ async def send_data():
         username=system.sp.get_creds['name'],
         password=system.sp.get_creds['pswd']
     )
-    Query.createDefaultTask(
-        id=system.sp.get_creds['id'],
-        auto_harvest=True,
-        system_cooling=True
-    )
     Is_data_sending=False
     while True:
         try:
@@ -87,18 +82,18 @@ async def send_data():
                             await asyncio.sleep(1)  # Send data every 1 seconds
                         except websockets.ConnectionClosed as e:
                             print(f"Connection closed: {e}. Reconnecting...")
-                            Query.insert_error_log(
-                                rasp_id=system.sp.get_creds['id'],
-                                error=str(e)
-                            )
+                            # Query.insert_error_log(
+                            #     rasp_id=system.sp.get_creds['id'],
+                            #     error=str(e)
+                            # )
                             relay.relay.stop
                             await asyncio.sleep(5)  # Wait before attempting to reconnect
                         except Exception as e:
                             print(f"An error occurred: {e}. Reconnecting...")
-                            Query.insert_error_log(
-                                rasp_id=system.sp.get_creds['id'],
-                                error=str(e)
-                            )
+                            # Query.insert_error_log(
+                            #     rasp_id=system.sp.get_creds['id'],
+                            #     error=str(e)
+                            # )
                             relay.relay.stop
                             await asyncio.sleep(5)  # Wait before attempting to reconnect
 
@@ -107,10 +102,10 @@ async def send_data():
                             exit()
         except Exception  as e:
             print(f"An error occurred: {e}. Reconnecting...")
-            Query.insert_error_log(
-                rasp_id=system.sp.get_creds['id'],
-                error=str(e)
-            )
+            # Query.insert_error_log(
+            #     rasp_id=system.sp.get_creds['id'],
+            #     error=str(e)
+            # )
             relay.relay.stop
             await asyncio.sleep(5)  # Wait before attempting to reconnect
             
