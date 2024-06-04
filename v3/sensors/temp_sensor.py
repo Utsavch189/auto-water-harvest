@@ -5,7 +5,8 @@ class DHT11Sensor:
     def __init__(self,board_pin) -> None:
         try:
             self.dht_device = adafruit_dht.DHT11(board_pin)
-        except:
+        except Exception as e:
+            print(e)
             self.dht_device=None
     
     @property

@@ -22,14 +22,14 @@ class Query:
             print(e)
     
     @staticmethod
-    async def createDefaultTask(id:str,auto_harvest:bool,system_cooling:bool):
+    async def createDefaultTask(id:str,auto_harvest:bool,pump_schedule_start_time:str,pump_schedule_end_time:str,system_cooling:bool,pump_start_now:bool):
         exists_q="""
             SELECT * FROM RaspberryTaskControl WHERE raspberry_id='%s'
         """%(id,)
 
         insert_q="""
-            INSERT INTO RaspberryTaskControl(raspberry_id,auto_harvest,system_cooling,uploaded_at) VALUES('%s',%d,%d,'%s')
-        """%(id,auto_harvest,system_cooling,get_datetime())
+            INSERT INTO RaspberryTaskControl(raspberry_id,auto_harvest,pump_schedule_start_time,pump_schedule_end_time,system_cooling,pump_start_now,uploaded_at) VALUES('%s',%d,'%s','%s',%d,%d,'%s')
+        """%(id,auto_harvest,pump_schedule_start_time,pump_schedule_end_time,system_cooling,pump_start_now,get_datetime())
         try:
             exists=client.exec_query(exists_q,conn)
             if not exists.get_result():

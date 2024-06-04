@@ -4,10 +4,13 @@ import time
 class Relay:
 
     def __init__(self,pin:int):
-        self.pin=pin
-        self.gpio=GPIO
-        self.gpio.setmode(self.gpio.BCM)
-        self.gpio.setup(self.pin,self.gpio.OUT)
+        try:
+            self.pin=pin
+            self.gpio=GPIO
+            self.gpio.setmode(self.gpio.BCM)
+            self.gpio.setup(self.pin,self.gpio.OUT)
+        except Exception as e:
+            print(e)
 
     @property
     def start(self):
@@ -26,5 +29,8 @@ class Relay:
             pass
 
     def clean(self):
-        self.gpio.cleanup()
+        try:
+            self.gpio.cleanup()
+        except Exception as e:
+            print(e)
 

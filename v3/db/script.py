@@ -65,9 +65,10 @@ def createRaspberryTaskControlTable():
             id integer primary key autoincrement,
             raspberry_id varchar(100),
             auto_harvest bool default true,
-            pump_schedule_start timestamp default 0,
-            pump_schedule_end timestamp default 0,
+            pump_schedule_start_time time default 0,
+            pump_schedule_end_time time default 0,
             system_cooling bool default true,
+            pump_start_now bool default false,
             uploaded_at timestamp default CURRENT_TIMESTAMP,
             foreign key(raspberry_id) references Raspberry(id)
         );

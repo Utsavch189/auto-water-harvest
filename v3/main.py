@@ -24,14 +24,17 @@ system=System()
 async def send_data():
     await asyncio.gather(
         Query.createRasp(
-            id=system.sp.get_creds['id'],
-            username=system.sp.get_creds['name'],
-            password=system.sp.get_creds['pswd']
+            id=system.sp.get_creds()['id'],
+            username=system.sp.get_creds()['name'],
+            password=system.sp.get_creds()['pswd']
         ),
         Query.createDefaultTask(
-            id=system.sp.get_creds['id'],
+            id=system.sp.get_creds()['id'],
             auto_harvest=True,
-            system_cooling=True
+            pump_schedule_start_time='00:00:00',
+            pump_schedule_end_time='00:00:00',
+            system_cooling=True,
+            pump_start_now=False
         )
     )
     Is_data_sending=False
@@ -42,7 +45,8 @@ async def send_data():
 
             while True:
                 try:
-                    print("cache data : ",cache.get('tasks'))
+                    print("cache data ------------------------ : ",cache.get('tasks'),end="\n")
+                    print("--------------------------------------")
                     moist=soil_moist.getMoisture
                     soil_mositure=moist[0]
                     voltage=moist[1]
@@ -53,11 +57,13 @@ async def send_data():
                     if cache.get('tasks'):
                         relay.match(
                             auto_harvest=cache.get('tasks')[0]['auto_harvest'],
-                            soil_moist=soil_mositure
+                            soil_moist=soil_mositure,
+                            pump_start=cache.get('tasks')[0]['pump_schedule_start_time'],
+                            pump_end=cache.get('tasks')[0]['pump_schedule_end_time'],
+                            pump_start_now=cache.get('tasks')[0]['pump_start_now']
                         )
 
-                    if not (moist and curr_temp and curr_humdt):
-                        await asyncio.sleep(2)
+                    if not (moist and curr_temp and curr_humdt and system_data):
                         continue
 
                     
@@ -70,6 +76,7 @@ async def send_data():
                         ).start()
                     
                     try:
+                        print('In db operation......')
                         await asyncio.gather(
                             Query.insert_system_data(
                                 system_data['creds']['id'],
@@ -92,7 +99,6 @@ async def send_data():
                         pass
                     except Exception as e:
                         print(f"Database operation error: {e}")
-                        continue
 
                     
                     try:
@@ -103,14 +109,13 @@ async def send_data():
                         print("------------ data get from db -------")
                     except Exception as e:
                         print(f"Database fetch error: {e}")
-                        continue
 
                     
                     await asyncio.sleep(5)  # Send data every 1 second
                 except Exception as e:
                     print(f"An error occurred: {e}. Reconnecting...")
                     Query.insert_error_log(
-                        rasp_id=system.sp.get_creds['id'],
+                        rasp_id=system.sp.get_creds()['id'],
                         error=str(e)
                     )
                     relay.relay.stop
@@ -121,7 +126,7 @@ async def send_data():
         except Exception  as e:
             print(f"An error occurred: {e}. Reconnecting...")
             Query.insert_error_log(
-                rasp_id=system.sp.get_creds['id'],
+                rasp_id=system.sp.get_creds()['id'],
                 error=str(e)
             )
             relay.relay.stop
