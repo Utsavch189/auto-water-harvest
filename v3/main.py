@@ -13,7 +13,7 @@ import json
 
 
 # Modules Init
-relay=WaterPumpRelay(pin=4)
+relay=WaterPumpRelay(pin=4,moist_threasold=18000)
 dht=DHT11Sensor(board_pin=board.D17)
 soil_moist=SoilSensor()
 cache=Cache(capacity=256)

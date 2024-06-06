@@ -2,6 +2,11 @@ import busio,board
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
 
+"""
+sudo i2cdetect -y 1
+To detect soil sensor's analog to digital convereter
+"""
+
 class SoilSensor:
     
     def __init__(self) -> None:
